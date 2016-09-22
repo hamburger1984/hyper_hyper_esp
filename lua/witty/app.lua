@@ -4,55 +4,59 @@ local module = {}
 --   RED           8     15
 -- GREEN           6     12
 --  BLUE           7     13
-red, green, blue = 8, 6, 7
+PIN_R, PIN_G, PIN_B= 8, 6, 7
+
+r, g, b, l = 0, 0, 0, 500
 
 
-local function init_pins()
-    pwm.setup(red, 100, 100)
-    pwm.setup(green, 100, 0)
-    pwm.setup(blue, 100, 0)
-
-    pwm.start(red)
-    pwm.start(green)
-    pwm.start(blue)
+local function setbrightness(component)
+    return (component * l) / 1024
 end
 
-local function color(r, g, b)
-    scale=3
-    r, g, b = scale*math.min(255, r), scale*math.min(255, g), scale*math.min(255, b)
+local function setcolor()
+    --tmr.stop(0)
+    --tmr.stop(1)
 
-    r0, g0, b0 = pwm.getduty(red), pwm.getduty(green), pwm.getduty(blue)
+    pwm.setduty(PIN_R, setbrightness(r))
+    pwm.setduty(PIN_G, setbrightness(g))
+    pwm.setduty(PIN_B, setbrightness(b))
 
-    dr, dg, db = r-r0, g-g0, b-b0
-
-    steps = 8
-    sr, sg, sb = dr/steps, dg/steps, db/steps
-
-    for i = 0, steps, 1 do
-        r0 = r0 + sr
-        g0 = g0 + sg
-        b0 = b0 + sb
-
-        pwm.setduty(red, r0)
-        pwm.setduty(green, g0)
-        pwm.setduty(blue, b0)
-        tmr.delay(200)
-    end
-
-    pwm.setduty(red, r)
-    pwm.setduty(green, g)
-    pwm.setduty(blue, b)
+    --tmr.start(0)
+    --tmr.start(1)
 end
 
 local function randomcolor()
-    color(math.random(0xff), math.random(0xff), math.random(0xff))
+    r, g, b = math.random(0x400), math.random(0x400), math.random(0x400)
+    setcolor()
+end
+
+local function adjustbrightness()
+    newl = adc.read(0)
+    if newl ~= l then
+        print(newl)
+        l = newl
+        setcolor()
+    end
 end
 
 function module.start()
-    init_pins()
     math.randomseed(tmr.now())
 
+    if adc.force_init_mode(adc.INIT_ADC) then
+        node.restart()
+        return
+    end
+
+    pwm.setup(PIN_R, 100, 100)
+    pwm.setup(PIN_G, 100, 0)
+    pwm.setup(PIN_B, 100, 0)
+
+    pwm.start(PIN_R)
+    pwm.start(PIN_G)
+    pwm.start(PIN_B)
+
     tmr.alarm(0, 5000, tmr.ALARM_AUTO, function() randomcolor() end)
+    tmr.alarm(1, 100, tmr.ALARM_AUTO, function() adjustbrightness() end)
 end
 
 return module
