@@ -8,7 +8,7 @@ PIN_R, PIN_G, PIN_B= 8, 6, 7
 
 h, s, v = 24, 0xff, 0x10
 
-pulse, step = 100, 9
+pulse, step = 100, 12
 
 -- where:
 --   hue         in 0..255
@@ -24,41 +24,41 @@ local function hsv_to_rgb(hue, saturation, value)
     local q = bit.rshift(value * (255 - bit.rshift(saturation * fpart, 8)), 8)
     local t = bit.rshift(value * (255 - bit.rshift(saturation * (255-fpart), 8)), 8)
 
-    if h==0 or h==6 then
+    if region==0 or region==6 then
         return value, t, p
-    elseif h==1 then
+    elseif region==1 then
         return q, value, p
-    elseif h==2 then
+    elseif region==2 then
         return p, value, t
-    elseif h==3 then
+    elseif region==3 then
         return p, q, value
-    elseif h==4 then
+    elseif region==4 then
         return t, p, value
-    else
+    elseif region==5 then
         return value, p, q
+    else return 255, 0, 0
     end
 end
 
 local function setcolor()
     local r, g, b = hsv_to_rgb(h, s, (v*pulse)/0x400)
-    pwm.setduty(PIN_R, r*4)
-    pwm.setduty(PIN_G, g*4)
-    pwm.setduty(PIN_B, b*4)
-end
-
-local function randomcolor()
-    h = math.random(0xff)
-
-    setcolor()
+    pwm.setduty(PIN_R, r*3)
+    pwm.setduty(PIN_G, g*3)
+    pwm.setduty(PIN_B, b*3)
 end
 
 local function do_step()
-    if (pulse + step) > 0xff or (pulse + step) < 0 then
+    if (pulse + step) > 0xff or (pulse + step) < 10 then
         step = -1 * step
     end
 
     pulse = pulse + step
     v = adc.read(0)
+
+    h = h+1
+    if h > 255 then
+        h = 0
+    end
 
     setcolor()
 end
@@ -79,9 +79,6 @@ function module.start()
     pwm.start(PIN_G)
     pwm.start(PIN_B)
 
-    randomcolor()
-
-    tmr.alarm(0, 2000, tmr.ALARM_AUTO, function() randomcolor() end)
     tmr.alarm(1, 50, tmr.ALARM_AUTO, function() do_step() end)
 end
 
