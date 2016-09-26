@@ -1,5 +1,7 @@
 local module = {}
 
+-- tested on Witty Cloud board (ESP8266 + RGB-LED + LDR)
+
 -- Color -- IO Index -- PIN
 --   RED           8     15
 -- GREEN           6     12
@@ -8,7 +10,7 @@ PIN_R, PIN_G, PIN_B= 8, 6, 7
 
 h, s, v = 24, 0xff, 0x10
 
-pulse, step = 100, 12
+pulse, step = 100, 23
 
 -- where:
 --   hue         in 0..255
@@ -41,7 +43,7 @@ local function hsv_to_rgb(hue, saturation, value)
 end
 
 local function setcolor()
-    local r, g, b = hsv_to_rgb(h, s, (v*pulse)/0x400)
+    local r, g, b = hsv_to_rgb(h, s, (v*pulse)/0xff)
     pwm.setduty(PIN_R, r*3)
     pwm.setduty(PIN_G, g*3)
     pwm.setduty(PIN_B, b*3)
@@ -53,7 +55,7 @@ local function do_step()
     end
 
     pulse = pulse + step
-    v = adc.read(0)
+    v = adc.read(0) / 4
 
     h = h+1
     if h > 255 then
@@ -79,7 +81,7 @@ function module.start()
     pwm.start(PIN_G)
     pwm.start(PIN_B)
 
-    tmr.alarm(1, 50, tmr.ALARM_AUTO, function() do_step() end)
+    tmr.alarm(1, 100, tmr.ALARM_AUTO, function() do_step() end)
 end
 
 return module

@@ -4,5 +4,5 @@ if file.exists("app.lc") then
     app = require("app")
     app.start()
 else
-    print("could not find app.lua.")
+    print("could not find app.lc.")
 end
