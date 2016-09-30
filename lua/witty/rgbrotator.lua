@@ -10,7 +10,8 @@ PIN_R, PIN_G, PIN_B= 8, 6, 7
 
 h, s, v = 24, 0xff, 0x10
 
-pulse_step = 23
+pulse_direction = 1
+pulse_speed = 10
 
 -- where:
 --   hue         in 0..255
@@ -50,10 +51,12 @@ local function setcolor()
 end
 
 local function do_step()
-    if (v + pulse_step) > 0xff or (v + pulse_step) < 0 then
-        pulse_step = -1 * pulse_step
+    step = pulse_direction * pulse_speed
+    if (v + step) > 0xff or (v + step) < 0 then
+        pulse_direction = -1 * pulse_direction
+        step = -1 * step
     end
-    v = v + pulse_step
+    v = v + step
 
     h = h+1
     if h > 255 then
@@ -75,6 +78,10 @@ function module.start()
     pwm.start(PIN_B)
 
     tmr.alarm(1, 100, tmr.ALARM_AUTO, function() do_step() end)
+end
+
+function module.setspeed(speed)
+    pulse_speed = speed
 end
 
 function module.stop()

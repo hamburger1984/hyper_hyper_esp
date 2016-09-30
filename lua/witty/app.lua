@@ -13,6 +13,7 @@ local function report_brightness()
 end
 
 function module.start()
+    rgb.setspeed(75)
     rgb.start()
 
     -- initialize MQTT client
@@ -30,6 +31,8 @@ end
 
 function module.connected()
     print("Connected.")
+    rgb.setspeed(22)
+
 
     print("Connnecting to mqtt "..config.mqtt_broker..":"..config.mqtt_port.."..")
     -- host, port, secure, autoreconnect
@@ -38,6 +41,7 @@ end
 
 function module.disconnected()
     print("Disconnected.")
+    rgb.setspeed(75)
 end
 
 return module
