@@ -1,11 +1,15 @@
 local module = {}
 
 m = nil
+published_b = nil
 
 local function report_brightness()
     b = adc.read(0)
-    print("Publishing "..b.." to "..config.mqtt_topic)
-    m:publish(config.mqtt_topic, b, 0, 0)
+    if published_b == nil or published_b ~= b then
+        print("Publishing "..b.." to "..config.mqtt_topic)
+        m:publish(config.mqtt_topic, b, 0, 0)
+        published_b = b
+    end
 end
 
 function module.start()
