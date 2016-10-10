@@ -37,6 +37,7 @@ read -p "Edit modules to build now? y [n] " configure;
 case "$configure" in
     y|Y )
         editor=$EDITOR
+        [ -z $editor ] && which nvim && editor=nvim
         [ -z $editor ] && which vim && editor=vim
         [ -z $editor ] && which nano && editor=nano
         [ -z $editor ] && echo "No editor found"

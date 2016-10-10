@@ -10,8 +10,9 @@ PIN_R, PIN_G, PIN_B= 8, 6, 7
 
 h, s, v = 24, 0xff, 0x10
 
+pulse_max = 0xff
 pulse_direction = 1
-pulse_speed = 10
+pulse_speed = 5
 
 -- where:
 --   hue         in 0..255
@@ -52,9 +53,17 @@ end
 
 local function do_step()
     step = pulse_direction * pulse_speed
-    if (v + step) > 0xff or (v + step) < 0 then
-        pulse_direction = -1 * pulse_direction
-        step = -1 * step
+    if (v + step) > pulse_max then
+        pulse_direction = -1
+        if step > 0 then
+            step = -1 * step
+        end
+    end
+    if (v + step) < 0 then
+        pulse_direction = 1
+        if step < 0 then
+            step = -1 * step
+        end
     end
     v = v + step
 
@@ -80,12 +89,29 @@ function module.start()
     tmr.alarm(1, 100, tmr.ALARM_AUTO, function() do_step() end)
 end
 
-function module.setspeed(speed)
-    pulse_speed = speed
-end
-
 function module.stop()
     tmr.unregister(1)
+end
+
+function module.fast()
+    pulse_speed = 75
+end
+
+function module.slow()
+    pulse_speed = 5
+end
+
+function module.dim()
+    pulse_max = 0x20
+end
+
+function module.light()
+    pulse_max = 0xff
+end
+
+function module.flash()
+    pulse_direction = -1
+    v = 0xff
 end
 
 return module

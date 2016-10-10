@@ -9,11 +9,13 @@ local function report_brightness()
         print("Publishing "..b.." to "..config.mqtt_topic)
         m:publish(config.mqtt_topic, b, 0, 0)
         published_b = b
+        rgb.flash()
     end
 end
 
 function module.start()
-    rgb.setspeed(75)
+    rgb.light()
+    rgb.fast()
     rgb.start()
 
     -- initialize MQTT client
@@ -31,8 +33,8 @@ end
 
 function module.connected()
     print("Connected.")
-    rgb.setspeed(22)
-
+    rgb.dim()
+    rgb.slow()
 
     print("Connnecting to mqtt "..config.mqtt_broker..":"..config.mqtt_port.."..")
     -- host, port, secure, autoreconnect
@@ -41,7 +43,8 @@ end
 
 function module.disconnected()
     print("Disconnected.")
-    rgb.setspeed(75)
+    rgb.light()
+    rgb.fast()
 end
 
 return module
