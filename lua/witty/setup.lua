@@ -5,16 +5,14 @@ local schedule_ap_scan
 local function check_access_points(scan_result)
     if scan_result then
         for ssid, data in pairs(scan_result) do
-            print(" --- "..ssid.." : "..data)
+            --print(" --- "..ssid.." : "..data)
             if config.wlan_config and config.wlan_config[ssid] then
                 wifi.sta.config(ssid, config.wlan_config[ssid])
                 wifi.sta.connect()
-                print(">> Connecting to "..ssid..".")
+                --print(">> Connecting to "..ssid..".")
                 return
             end
         end
-    else
-        print("!! No scan result.")
     end
 
     schedule_ap_scan()
