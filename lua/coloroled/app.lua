@@ -33,7 +33,7 @@ end
 function module.connected()
     print("Connnecting to mqtt "..config.mqtt_broker..":"..config.mqtt_port.."..")
     -- host, port, secure, autoreconnect
-    m:connect(config.mqtt_broker, config.mqtt_port, 0, 0)
+    m:connect(config.mqtt_broker, config.mqtt_port, 0, 1)
 end
 
 function module.disconnected()
