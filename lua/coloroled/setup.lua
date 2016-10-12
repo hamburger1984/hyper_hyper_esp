@@ -61,7 +61,7 @@ function module.start()
         print("\nIP assigned: "..T.IP.." (Gateway: "..T.gateway..")")
 
         display.text(0, 0, 0, ".", "large", 20) -- hack to clear line
-        display.text(0, 255, 0, "Connected.", "regular", 16)
+        display.text(0, 255, 0, "Connected.", "regular", 14)
         display.text(0, 255, 0, T.IP, "small", 42)
         tmr.delay(400000) -- another hack
 

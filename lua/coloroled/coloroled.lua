@@ -43,7 +43,7 @@ function module.border(r, g, b, offset)
     disp:drawFrame(offset, offset, disp:getWidth()-2*offset, disp:getHeight()-2*offset)
 end
 
-function module.text(r, g, b, value, size, ypos)
+function module.text(r, g, b, value, size, ypos, right_align)
     if size == 'small' then
         disp:setFont(ucg.font_profont10_mf)
     elseif size == 'large' then
@@ -57,14 +57,22 @@ function module.text(r, g, b, value, size, ypos)
 
     disp:setColor(0, r, g, b)
     disp:setFontPosTop()
-    disp:setPrintPos(offset, ypos)
+    if right_align then
+        disp:setPrintPos(disp:getWidth()-offset-tw, ypos)
+    else
+        disp:setPrintPos(offset, ypos)
+    end
     disp:print(value)
 
     -- clear remainder of line
     disp:setColor(0, 0, 0, 0)
     -- ascent is char height above baseline
     -- descent is below baseline (negative)
-    disp:drawBox(offset+tw, ypos, disp:getWidth()-2*offset-tw, disp:getFontAscent()+(-1*disp:getFontDescent()))
+    if right_align then
+        disp:drawBox(offset, ypos, disp:getWidth()-2*offset-tw, disp:getFontAscent()+(-1*disp:getFontDescent()))
+    else
+        disp:drawBox(offset+tw, ypos, disp:getWidth()-2*offset-tw, disp:getFontAscent()+(-1*disp:getFontDescent()))
+    end
 end
 
 return module

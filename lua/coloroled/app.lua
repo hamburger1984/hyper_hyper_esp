@@ -26,7 +26,7 @@ function module.start()
         display.border( 50,  75, 0, 5)
         display.border( 25, 100, 0, 6)
         display.border(  0, 155, 0, 7)
-        display.text(255, 255, 0, message, 'large', 16)
+        display.text(255, 255, 0, message, 'large', 14, true)
     end)
 end
 
