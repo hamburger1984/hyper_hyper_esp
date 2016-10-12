@@ -32,7 +32,6 @@ function module.start()
 end
 
 function module.connected()
-    print("Connected.")
     rgb.dim()
     rgb.slow()
 
@@ -42,7 +41,6 @@ function module.connected()
 end
 
 function module.disconnected()
-    print("Disconnected.")
     rgb.light()
     rgb.fast()
 end

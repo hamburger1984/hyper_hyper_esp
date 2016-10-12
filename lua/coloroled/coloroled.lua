@@ -1,14 +1,14 @@
 local module = {}
 
 --
--- HSPI CLK  = GPIO14 ~ D5 -- Serial Clock                -> SCL
--- HSPI MOSI = GPIO13 ~ D7 -- Master Output, Slave Input  -> SDA
--- HSPI MISO = GPIO12 ~ D6 -- Master Input, Slave Output  -> (not used)
--- HSPI MTDO = GPIO15 ~ D8 -- CS/SS                       -> (not used)
---
---             GPIO0  ~ D3                                -> CS
---             GPIO4  ~ D2                                -> DC
 --             GPIO5  ~ D1                                -> RES
+--             GPIO4  ~ D2                                -> DC
+--             GPIO0  ~ D3                                -> CS
+--
+-- HSPI CLK  = GPIO14 ~ D5 -- Serial Clock                -> SCL
+-- HSPI MISO = GPIO12 ~ D6 -- Master Input, Slave Output  -> (not used)
+-- HSPI MOSI = GPIO13 ~ D7 -- Master Output, Slave Input  -> SDA
+-- HSPI MTDO = GPIO15 ~ D8 -- CS/SS                       -> (not used)
 --
 
 CS, DC, RES = 3, 2, 1
@@ -25,14 +25,13 @@ function module.initialize()
     -- initialize ssd1331 driver
     disp = ucg.ssd1331_18x96x64_uvis_hw_spi(CS, DC, RES)
 
-    disp:begin(ucg.FONT_MODE_TRANSPARENT)
+    --disp:begin(ucg.FONT_MODE_TRANSPARENT)
+    disp:begin(ucg.FONT_MODE_SOLID)
 
     disp:clearScreen()
 
     disp:setColor(0, 255, 255, 255)
     disp:setColor(1, 0, 0, 0)
-
-    disp:setFont(ucg.font_helvB08_hr)
 end
 
 function module.clear()
@@ -44,15 +43,28 @@ function module.border(r, g, b, offset)
     disp:drawFrame(offset, offset, disp:getWidth()-2*offset, disp:getHeight()-2*offset)
 end
 
-function module.text(r, g, b, value)
+function module.text(r, g, b, value, size, ypos)
+    if size == 'small' then
+        disp:setFont(ucg.font_profont10_mf)
+    elseif size == 'large' then
+        disp:setFont(ucg.font_profont22_mf)
+    else
+        disp:setFont(ucg.font_profont15_mf)
+    end
 
-    disp:setColor(0, 0, 0, 0)
-    disp:drawBox(15, 15, disp:getWidth()-30, disp:getHeight()-30)
+    local tw = disp:getStrWidth(value)
+    local offset = 12
 
     disp:setColor(0, r, g, b)
-    disp:setFontPosCenter()
-    disp:setPrintPos(15, disp:getHeight()/2)
+    disp:setFontPosTop()
+    disp:setPrintPos(offset, ypos)
     disp:print(value)
+
+    -- clear remainder of line
+    disp:setColor(0, 0, 0, 0)
+    -- ascent is char height above baseline
+    -- descent is below baseline (negative)
+    disp:drawBox(offset+tw, ypos, disp:getWidth()-2*offset-tw, disp:getFontAscent()+(-1*disp:getFontDescent()))
 end
 
 return module

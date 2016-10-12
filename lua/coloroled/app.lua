@@ -18,24 +18,25 @@ function module.start()
         print("MQTT offline.")
     end)
     m:on("message", function(client, topic, message)
-        display.border(255, 0, 0, 0)
-        display.border(200, 0, 0, 1)
-        display.border(155, 0, 0, 2)
-        display.border(100, 0, 0, 3)
-        display.text(255, 0, 0, message)
+        display.border(255,   0, 0, 0)
+        display.border(200,   0, 0, 1)
+        display.border(155,   0, 0, 2)
+        display.border(100,  25, 0, 3)
+        display.border( 75,  50, 0, 4)
+        display.border( 50,  75, 0, 5)
+        display.border( 25, 100, 0, 6)
+        display.border(  0, 155, 0, 7)
+        display.text(255, 255, 0, message, 'large', 16)
     end)
 end
 
 function module.connected()
-    print("Connected.")
-
     print("Connnecting to mqtt "..config.mqtt_broker..":"..config.mqtt_port.."..")
     -- host, port, secure, autoreconnect
     m:connect(config.mqtt_broker, config.mqtt_port, 0, 0)
 end
 
 function module.disconnected()
-    print("Disconnected.")
 end
 
 return module
