@@ -28,6 +28,7 @@ local function init_OLED()
 end
 
 local function updateDisplay()
+    -- tmr.now() wraps around at 35:47.483.647 (31bit, microseconds)
     local seconds = tmr.now()/1000000
     local minutes = seconds/60
     seconds = seconds - (minutes*60)
@@ -46,7 +47,7 @@ local function updateDisplay()
         top = disp:getFontAscent() + -1*disp:getFontDescent()
 
         -- testing icon font.
-        disp:setFont(u8g.font_m2icon_5)
+        disp:setFont(u8g.font_m2icon_7)
         disp:setFontPosTop()
         h = disp:getFontAscent() + -1*disp:getFontDescent() + 2
         disp:drawStr(0, top, "\64\65\66\67\68\69\70\71\72\73\74\75\76\77\78\79")
