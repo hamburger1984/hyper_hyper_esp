@@ -8,44 +8,60 @@ function module.initialize()
     disp:setFontRefHeightExtendedText()
 end
 
+values = {}
+
+function module.setMPU(x1, y1, z1, x2, y2, z2, t)
+    values.x1 = x1
+    values.y1 = y1
+    values.z1 = z1
+    values.x2 = x2
+    values.y2 = y2
+    values.z2 = z2
+    values.t = t
+end
+
 local function updateDisplay()
-    -- tmr.now() wraps around at 35:47.483.647 (31bit, microseconds)
-    local seconds = tmr.now()/1000000
-    local minutes = seconds/60
-    seconds = seconds - (minutes*60)
-    local uptime = string.format("%02d:%02d", minutes, seconds)
     local width = disp:getWidth()
+    local column = width/3
+
     local height = disp:getHeight()
 
     local idStr = string.format("%06x", node.chipid())
 
+    disp:setFont(u8g.font_profont10)
+    disp:setFontPosBottom()
+    local line = disp:getFontAscent() - disp:getFontDescent() + 2
+
     disp:firstPage()
     repeat
-        -- say Hello
-        disp:setFont(u8g.font_profont22)
-        disp:setFontPosTop()
-        disp:drawStr(0, 0, "Hello")
-        top = disp:getFontAscent() + -1*disp:getFontDescent()
+        disp:drawStr(0+column/2, line, "X")
+        disp:drawStr(column+column/2, line, "Y")
+        disp:drawStr(2*column+column/2, line, "Z")
 
-        -- testing icon font.
-        disp:setFont(u8g.font_m2icon_7)
-        disp:setFontPosTop()
-        h = disp:getFontAscent() + -1*disp:getFontDescent() + 2
-        disp:drawStr(0, top, "\64\65\66\67\68\69\70\71\72\73\74\75\76\77\78\79")
-        disp:drawStr(0, top+h, "\80\81\82\83\84\85\86\87\88\89\90\91\92\93\94\95")
-        disp:drawStr(0, top+h+h, "\96\97\98\99\100\101\102\103\104\105\106\107\108\109\110\111")
+        disp:drawStr(column - disp:getStrWidth(values.x1), 2*line, values.x1)
+        disp:drawStr(2*column - disp:getStrWidth(values.y1), 2*line, values.y1)
+        disp:drawStr(width - disp:getStrWidth(values.z1), 2*line, values.z1)
 
-        -- printing node id & uptime to bottom line
-        disp:setFont(u8g.font_profont10)
-        disp:setFontPosBottom()
-        disp:drawStr(0, height, idStr)
-        uptimeWidth = disp:getStrWidth(uptime)
-        disp:drawStr(width-uptimeWidth, height, uptime)
+        disp:drawStr(column - disp:getStrWidth(values.x2), 3*line, values.x2)
+        disp:drawStr(2*column - disp:getStrWidth(values.y2), 3*line, values.y2)
+        disp:drawStr(width - disp:getStrWidth(values.z2), 3*line, values.z2)
+
+        tStr = "temperature "..values.t
+        disp:drawStr(width - disp:getStrWidth(tStr), 4*line, tStr)
+
+        -- id -> bottom right
+        disp:drawStr(width - disp:getStrWidth(idStr), height, idStr)
     until disp:nextPage() == false
 end
 
-function module.start()
-    tmr.alarm(0, 1000, tmr.ALARM_AUTO, function() updateDisplay() end)
+-- function module.start()
+--     local refresher = tmr:create()
+--     refresher:register(200, tmr.ALARM_AUTO, function(t) updateDisplay(); end)
+--     refresher:start()
+-- end
+--
+function module.render()
+    updateDisplay()
 end
 
 return module
