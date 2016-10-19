@@ -130,26 +130,19 @@ end
 
 function module.read_acceleration()
     local out = mpu_read(MPU9250_RA_ACCEL_XOUT_H, 6)
-    x = bit.lshift(string.byte(out, 1), 8) + string.byte(out, 2)
-    y = bit.lshift(string.byte(out, 3), 8) + string.byte(out, 4)
-    z = bit.lshift(string.byte(out, 5), 8) + string.byte(out, 6)
-
+    x, y, z = struct.unpack(">i2i2i2", out)
     return x, y, z
 end
 
 function module.read_temperature()
     local out = mpu_read(MPU9250_RA_TEMP_OUT_H, 2)
-    t = bit.lshift(string.byte(out, 1), 8) + string.byte(out, 2)
-
+    t = struct.unpack(">i2", out)
     return t
 end
 
 function module.read_orientation()
     local out = mpu_read(MPU9250_RA_GYRO_XOUT_H, 6)
-    x = bit.lshift(string.byte(out, 1), 8) + string.byte(out, 2)
-    y = bit.lshift(string.byte(out, 3), 8) + string.byte(out, 4)
-    z = bit.lshift(string.byte(out, 5), 8) + string.byte(out, 6)
-
+    x, y, z = struct.unpack(">i2i2i2", out)
     return x, y, z
 end
 

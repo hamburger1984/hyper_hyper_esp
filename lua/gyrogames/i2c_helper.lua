@@ -50,7 +50,7 @@ function module.scanbus()
     for i = 0, 127 do
         v = string.byte(module.read(i, 0, 1))
         if v ~= 0xff then
-            print(string.format("Read register 0 for %02x --> %02x", i, v))
+            print(string.format("Found I²C device at %02x (Reg 0:%02x)", i, v))
         end
     end
 end
